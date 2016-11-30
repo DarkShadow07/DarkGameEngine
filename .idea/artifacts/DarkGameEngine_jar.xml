@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="DarkGameEngine:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/DarkGameEngine_jar</output-path>
+    <root id="archive" name="DarkGameEngine.jar">
+      <element id="module-output" name="DarkGameEngine" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/netty-all-4.1.6.Final.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/lwjgl_util.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/slick-util.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/lwjgl.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
