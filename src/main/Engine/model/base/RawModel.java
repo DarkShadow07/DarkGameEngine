@@ -1,5 +1,7 @@
 package main.Engine.model.base;
 
+import org.lwjgl.opengl.GL20;
+
 public class RawModel
 {
 	protected int vao, vertexCount;
@@ -8,6 +10,18 @@ public class RawModel
 	{
 		this.vao = vao;
 		this.vertexCount = vertexCount;
+	}
+
+	public void enableAttributes()
+	{
+		GL20.glEnableVertexAttribArray(0);
+		GL20.glEnableVertexAttribArray(1);
+	}
+
+	public void disableAttributes()
+	{
+		GL20.glDisableVertexAttribArray(0);
+		GL20.glDisableVertexAttribArray(1);
 	}
 
 	public int getVAO()
