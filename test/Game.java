@@ -40,7 +40,7 @@ public class Game
 			shader[0] = new StaticShader();
 			engine.modelRenderer = new ModelRenderer(shader[0]);
 			engine.resourceManager = new ResourceManager(new Resources(new File("C:\\Users\\Yonatan\\Desktop\\Proyectos\\Java\\DarkGameEngine"), "res/"));
-			entity[0] = new Entity(new Position(0, 0, -90), 1.0f, new ModelBuilder.Dynamic()
+			entity[0] = new Entity(new Position(0, 0, 0), 1.8f, new ModelBuilder.Dynamic()
 					.addQuad(-50, -50, -50, 50, 50, -50, 0, 0, 1, 1)
 					.buildTextured(new ResourceLocation("icon.png")));
 		});
@@ -52,12 +52,10 @@ public class Game
 
 		engine.addRenderHook(() ->
 		{
-			if (engine.modelRenderer == null) return;
-
 			engine.modelRenderer.preRender();
 			shader[0].view(camera);
 			shader[0].start();
-			//engine.modelRenderer.renderEntity(entity[0], shader[0]);
+			engine.modelRenderer.renderEntity(entity[0], shader[0]);
 			shader[0].stop();
 		});
 
