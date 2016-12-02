@@ -1,5 +1,7 @@
 package main.Engine.event;
 
+import main.Engine.event.base.Handler;
+import main.Engine.event.base.IEvent;
 import main.Engine.util.Log;
 
 import java.lang.reflect.Field;
@@ -18,8 +20,13 @@ public final class EventHandler
 	public void sendEvent(IEvent event)
 	{
 		if (handlers.containsKey(event.getClass()))
-			handlers.get(event.getClass()).forEach(handler -> handler.handle(event));
-		//else Log.warn(String.format("Not sending Event %s, no Handlers listening", event.getClass().getSimpleName()));
+			for (Handler.FunctionalHandler handler : handlers.get(event.getClass()))
+			{
+				if (event.isCancelled())
+					return;
+
+				handler.handle(event);
+			}
 	}
 
 	public void registerHandler(Object object)
@@ -31,7 +38,7 @@ public final class EventHandler
 			for (Field field : object.getClass().getFields())
 				if (field.isAnnotationPresent(Handler.class) && Modifier.isFinal(field.getModifiers()))
 				{
-					Handler handler = field.getAnnotation(Handler.class);
+					Handler.FunctionalHandler handler = field.get(o)
 
 					if (handlers.containsKey(handler.value()))
 						handlers.get(handler.value()).add((Handler.FunctionalHandler) field.get(object));

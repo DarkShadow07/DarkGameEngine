@@ -1,6 +1,6 @@
 package main.Engine.util.math;
 
-import main.Engine.camera.Camera;
+import main.Engine.engine.camera.Camera;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;

@@ -1,8 +1,8 @@
 package main.Engine.world;
 
 import main.Engine.entity.IEntity;
-import main.Engine.tile.ITickable;
-import main.Engine.tile.ITile;
+import main.Engine.world.tile.ITickable;
+import main.Engine.world.tile.ITile;
 import main.Engine.util.math.Position;
 
 import java.util.List;

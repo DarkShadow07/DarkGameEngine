@@ -1,6 +1,6 @@
 package main.Engine.entity;
 
-import main.Engine.model.base.TexturedModel;
+import main.Engine.engine.model.base.TexturedModel;
 import main.Engine.util.math.Position;
 
 public class Entity implements IEntity

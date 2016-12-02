@@ -44,6 +44,6 @@ public class Tuple<F, S, T>
 	@Override
 	public String toString()
 	{
-		return String.format("%s, %s, %s", first, second, third);
+		return first + ", " + second + ", " + third;
 	}
 }
