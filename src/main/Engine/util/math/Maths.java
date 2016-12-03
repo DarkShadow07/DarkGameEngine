@@ -32,7 +32,7 @@ public class Maths
 		vec1.set(1, 0, 0);
 		vec2.set(0, 1, 0);
 		vec3.set(0, 0, 1);
-		vec4.set(1f / Display.getWidth() * camera.getScale(), 1f / Display.getWidth() * camera.getScale(), 1f);
+		vec4.set(1f / Display.getWidth() * camera.getScale(), 1f / Display.getWidth() * camera.getScale(), 1f / Display.getWidth());
 		vec5.set(-camera.getPosition().getX(), -camera.getPosition().getY(), -camera.getPosition().getZ());
 
 		matrix.setIdentity();

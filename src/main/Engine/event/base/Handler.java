@@ -10,9 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Handler
 {
-	@FunctionalInterface
-	interface FunctionalHandler<E extends IEvent>
-	{
-		void handle(E event);
-	}
+
 }

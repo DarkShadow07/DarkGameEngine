@@ -1,5 +1,6 @@
 package main.Engine.engine.model;
 
+import main.Engine.engine.camera.Camera;
 import main.Engine.engine.model.base.DynamicRawModel;
 import main.Engine.engine.model.base.RawModel;
 import main.Engine.engine.model.base.TexturedModel;
@@ -13,6 +14,7 @@ public class ModelRenderer
 {
 	private Matrix4f projectionMatrix = new Matrix4f();
 	private StaticShader shader;
+	private Camera camera;
 
 	public ModelRenderer(StaticShader shader)
 	{
@@ -74,6 +76,26 @@ public class ModelRenderer
 		GL11.glDrawElements(GL11.GL_TRIANGLES, model.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
+	}
+
+	public void setCamera(Camera camera)
+	{
+		this.camera = camera;
+	}
+
+	public Camera getCamera()
+	{
+		return camera;
+	}
+
+	public void setShader(StaticShader shader)
+	{
+		this.shader = shader;
+	}
+
+	public StaticShader getShader()
+	{
+		return shader;
 	}
 
 	public void createProjectionMatrix()

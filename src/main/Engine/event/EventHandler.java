@@ -1,11 +1,12 @@
 package main.Engine.event;
 
+import main.Engine.event.base.FunctionalHandler;
 import main.Engine.event.base.Handler;
 import main.Engine.event.base.IEvent;
 import main.Engine.util.Log;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -15,12 +16,13 @@ public final class EventHandler
 {
 	public static final EventHandler instance = new EventHandler();
 
-	private Map<Class<? extends IEvent>, List<Handler.FunctionalHandler>> handlers = new HashMap<>();
+	private Map<Class<? extends IEvent>, List<FunctionalHandler>> handlers = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	public void sendEvent(IEvent event)
 	{
 		if (handlers.containsKey(event.getClass()))
-			for (Handler.FunctionalHandler handler : handlers.get(event.getClass()))
+			for (FunctionalHandler handler : handlers.get(event.getClass()))
 			{
 				if (event.isCancelled())
 					return;
@@ -29,23 +31,23 @@ public final class EventHandler
 			}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void registerHandler(Object object)
 	{
 		try
 		{
-			object = object.getClass().newInstance();
-
-			for (Field field : object.getClass().getFields())
-				if (field.isAnnotationPresent(Handler.class) && Modifier.isFinal(field.getModifiers()))
+			for (Field field : object.getClass().getDeclaredFields())
+				if (field.isAnnotationPresent(Handler.class))
 				{
-					Handler.FunctionalHandler handler = field.get(o)
+					FunctionalHandler handler = (FunctionalHandler) field.get(object);
 
-					if (handlers.containsKey(handler.value()))
-						handlers.get(handler.value()).add((Handler.FunctionalHandler) field.get(object));
+					Class<? extends IEvent> event = (Class<? extends IEvent>) Class.forName(((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0].getTypeName());
+
+					if (handlers.containsKey(event))
+						handlers.get(event).add(handler);
 					else
-						handlers.put(handler.value(), Collections.singletonList((Handler.FunctionalHandler) field.get(object)));
-
-					Log.info(String.format("Registered Handler %s@%s for Event %s", field.getName(), object.getClass().getSimpleName(), handler.value().getSimpleName()));
+						handlers.put(event, Collections.singletonList(handler));
+					Log.info(String.format("Registered Handler %s@%s for %s", field.getName(), object.getClass().getSimpleName(), event.getSimpleName()));
 				}
 		} catch (Exception e)
 		{

@@ -7,6 +7,7 @@ import main.Engine.engine.network.NetworkServer;
 import main.Engine.event.EventHandler;
 import main.Engine.event.game.InitializationEvent;
 import main.Engine.event.game.RenderEvent;
+import main.Engine.event.game.StopEvent;
 import main.Engine.event.game.TickEvent;
 import main.Engine.font.FontRenderer;
 import main.Engine.util.Log;
@@ -17,11 +18,6 @@ import java.nio.ByteBuffer;
 
 public class GameEngine
 {
-	static
-	{
-
-	}
-
 	public final String icon, name;
 	public final int targetFrames, targetTicks, width, height;
 	public final boolean fullscreen;
@@ -123,11 +119,11 @@ public class GameEngine
 
 	private void stopGameLoop()
 	{
-		EventHandler.instance.sendEvent(new RenderEvent(this).Pre());
+		EventHandler.instance.sendEvent(new StopEvent(this).Pre());
 
 		ModelLoader.instance.cleanUp();
 
-		EventHandler.instance.sendEvent(new RenderEvent(this).Post());
+		EventHandler.instance.sendEvent(new StopEvent(this).Post());
 
 		Display.destroy();
 	}
