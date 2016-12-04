@@ -1,0 +1,14 @@
+#version 330
+
+in vec2 quads;
+in vec2 uvs;
+
+out vec2 outUvs;
+
+uniform vec2 translation;
+
+void main(void)
+{
+    gl_Position = vec4(quads + translation, 0.0, 1.0);
+    outUvs = uvs;
+}

@@ -5,6 +5,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.io.BufferedReader;
@@ -47,6 +48,11 @@ public abstract class BaseShader
 	protected void loadVector(int location, Vector3f vector)
 	{
 		GL20.glUniform3f(location, vector.getX(), vector.getY(), vector.getZ());
+	}
+
+	protected void loadVector2(int location, Vector2f vector)
+	{
+		GL20.glUniform2f(location, vector.getX(), vector.getY());
 	}
 
 	protected void loadFloat(int location, float value)
@@ -110,7 +116,7 @@ public abstract class BaseShader
 		GL20.glCompileShader(id);
 		if (GL20.glGetShaderi(id, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE)
 		{
-			Log.error(GL20.glGetShaderInfoLog(id, 500));
+			Log.error(file, GL20.glGetShaderInfoLog(id, 500));
 			System.exit(-2);
 		}
 

@@ -1,10 +1,21 @@
 package main.Engine.font;
 
+import javafx.util.Pair;
+import main.Engine.engine.model.ModelLoader;
+import main.Engine.engine.model.resource.ResourceLocation;
+import main.Engine.engine.model.texture.ModelTexture;
 import main.Engine.util.Log;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FontRenderer
@@ -30,16 +41,75 @@ public class FontRenderer
 	public static final String STRIKETHROUGHT = formatter + "m";
 	public static final String UNDERLINE = formatter + "n";
 	public static final String ITALIC = formatter + "o";
+
 	private String fontFile, fontImg;
 	private Map<Integer, CharData> characters;
 	private float scale;
 
-	public FontRenderer(String fontFile)
+	private FontShader shader;
+	public FontLoader fontLoader;
+
+	private List<Text> texts = new ArrayList<>();
+
+	public FontRenderer(ResourceLocation location)
 	{
-		this.fontFile = fontFile;
+		fontFile = location.toString();
 		scale = 1f;
 
+		shader = new FontShader();
+		fontLoader = new FontLoader(this);
+
 		readFile();
+	}
+
+	public void renderText(Text text)
+	{
+		if (!texts.contains(text))
+		{
+			text = fontLoader.loadText(text);
+			texts.add(text);
+		}
+	}
+
+	public void removeText(Text text)
+	{
+		texts.remove(text);
+	}
+
+	public CharData getCharData(char c)
+	{
+		return characters.get((int) c);
+	}
+
+	public void render()
+	{
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+		shader.start();
+		for (Text text : texts)
+		{
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, getFontTextureAtlas().getId());
+			GL30.glBindVertexArray(text.getVao());
+			GL20.glEnableVertexAttribArray(0);
+			GL20.glEnableVertexAttribArray(1);
+			shader.color(text.getColor());
+			shader.translation(text.getPosition().toVector2());
+			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, text.getVertexCount());
+			GL20.glDisableVertexAttribArray(0);
+			GL20.glDisableVertexAttribArray(1);
+		}
+		shader.stop();
+
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+	}
+
+	public void cleanUp()
+	{
+		shader.remove();
 	}
 
 	public int getStringWidth(String string)
@@ -52,44 +122,48 @@ public class FontRenderer
 		return size;
 	}
 
+	public ModelTexture getFontTextureAtlas()
+	{
+		return ModelLoader.instance.loadTexture(new ResourceLocation(fontImg));
+	}
+
 	private void readFile()
 	{
 		try
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(Class.class.getResourceAsStream(fontFile)));
+			BufferedReader reader = new BufferedReader(new FileReader(new File(fontFile)));
 
 			String line;
+			List<Pair<String, String>> lineData = new ArrayList<>();
 
 			while ((line = reader.readLine()) != null)
 			{
-				if (line.contains("file="))
-					fontImg = line.substring(line.indexOf("file=") + 5).replaceAll("\"", "");
-				if (line.contains("count="))
-					characters = new HashMap<>(Integer.valueOf(line.split("=")[1]));
-				if (line.contains("char id"))
+				lineData.clear();
+
+				for (String split : line.split(" "))
 				{
-					int id = 0, x = 0, y = 0, width = 0, height = 0, yOffset = 0;
+					String[] values = split.split("=");
 
-					for (String s : line.split(" "))
-						if (s.contains("id="))
-							id = Integer.valueOf(s.split("=")[1]);
-						else if (s.contains("x="))
-							x = Integer.valueOf(s.split("=")[1]);
-						else if (s.contains("y="))
-							y = Integer.valueOf(s.split("=")[1]);
-						else if (s.contains("width="))
-							width = Integer.valueOf(s.split("=")[1]);
-						else if (s.contains("height="))
-							height = Integer.valueOf(s.split("=")[1]);
-						else if (s.contains("yoffset="))
-							yOffset = Integer.valueOf(s.split("=")[1]);
+					if (values.length == 2)
+						lineData.add(new Pair<>(values[0], values[1]));
+				}
 
-					characters.put(id, new CharData(x, y, width, height, yOffset));
+				if (lineData.size() == 2)
+				{
+					fontImg = lineData.get(0).getValue().replaceAll("\"", "");
+					characters = new HashMap<>(Integer.valueOf(lineData.get(1).getValue()));
+				} else
+				{
+					characters.put(Integer.valueOf(lineData.get(0).getValue()), new CharData(
+							Integer.valueOf(lineData.get(1).getValue()),
+							Integer.valueOf(lineData.get(2).getValue()),
+							Integer.valueOf(lineData.get(3).getValue()),
+							Integer.valueOf(lineData.get(4).getValue()),
+							Integer.valueOf(lineData.get(5).getValue()),
+							Integer.valueOf(lineData.get(6).getValue()),
+							Integer.valueOf(lineData.get(7).getValue())));
 				}
 			}
-
-			if (fontImg == null)
-				throw new NullPointerException(String.format("Font Image is not defined for font %s!", fontFile));
 			Log.info(String.format("Loaded %s characters", characters.size()));
 		} catch (Exception e)
 		{
@@ -97,17 +171,19 @@ public class FontRenderer
 		}
 	}
 
-	private class CharData
+	public static class CharData
 	{
-		private int x, y, width, height, yOffset;
+		private int x, y, width, height, xOffset, yOffset, xAdvance;
 
-		public CharData(int x, int y, int width, int height, int yOffset)
+		public CharData(int x, int y, int width, int height, int xOffset, int yOffset, int xAdvance)
 		{
 			this.x = x;
 			this.y = y;
 			this.width = width;
 			this.height = height;
+			this.xOffset = xOffset;
 			this.yOffset = yOffset;
+			this.xAdvance = xAdvance;
 		}
 
 		public int getX()
@@ -130,9 +206,19 @@ public class FontRenderer
 			return height;
 		}
 
+		public int getxOffset()
+		{
+			return xOffset;
+		}
+
 		public int getyOffset()
 		{
 			return yOffset;
+		}
+
+		public int getxAdvance()
+		{
+			return xAdvance;
 		}
 	}
 }

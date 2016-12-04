@@ -55,6 +55,26 @@ public class ModelBuilder
 		return this;
 	}
 
+	public List<Float> getQuads()
+	{
+		return quads;
+	}
+
+	public int getQuadCount()
+	{
+		return quadCount;
+	}
+
+	public List<Float> getUVs()
+	{
+		return uvs;
+	}
+
+	public List<Integer> getIndices()
+	{
+		return indices;
+	}
+
 	public RawModel buildRaw()
 	{
 		float[] quads = new float[this.quads.size()], uvs = new float[this.uvs.size()];
@@ -123,6 +143,26 @@ public class ModelBuilder
 			return this;
 		}
 
+		public List<Float> getQuads()
+		{
+			return quads;
+		}
+
+		public int getQuadCount()
+		{
+			return quadCount;
+		}
+
+		public List<Float> getUVs()
+		{
+			return uvs;
+		}
+
+		public List<Integer> getIndices()
+		{
+			return indices;
+		}
+
 		public DynamicRawModel buildRaw(DynamicVBO... customVBOs)
 		{
 			float[] quads = new float[this.quads.size()], uvs = new float[this.uvs.size()];
@@ -148,6 +188,98 @@ public class ModelBuilder
 		public DynamicTexturedModel buildTextured(ResourceLocation location, DynamicVBO... customVBOs)
 		{
 			return new DynamicTexturedModel(buildRaw(customVBOs), ModelLoader.instance.loadTexture(location));
+		}
+	}
+
+	public static class TwoDimensional
+	{
+		private List<Float> quads = new ArrayList<>(), uvs = new ArrayList<>();
+
+		private int quadCount = 0;
+
+		public TwoDimensional()
+		{
+
+		}
+
+		public TwoDimensional addQuad(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2)
+		{
+			quads.add(x1);
+			quads.add(y1);
+			quads.add(x1);
+			quads.add(y2);
+			quads.add(x2);
+			quads.add(y2);
+			quads.add(x2);
+			quads.add(y2);
+			quads.add(x2);
+			quads.add(y1);
+			quads.add(x1);
+			quads.add(y1);
+
+			uvs.add(u1);
+			uvs.add(v1);
+			uvs.add(u1);
+			uvs.add(v2);
+			uvs.add(u2);
+			uvs.add(v2);
+			uvs.add(u2);
+			uvs.add(v2);
+			uvs.add(u2);
+			uvs.add(v1);
+			uvs.add(u1);
+			uvs.add(v1);
+
+			quadCount++;
+
+			return this;
+		}
+
+		public List<Float> getQuads()
+		{
+			return quads;
+		}
+
+		public float[] getQuadsArray()
+		{
+			float[] quads = new float[this.quads.size()];
+
+			for (int i = 0; i < this.quads.size(); i++)
+				quads[i] = this.quads.get(i);
+
+			return quads;
+		}
+
+		public int getQuadCount()
+		{
+			return quadCount;
+		}
+
+		public List<Float> getUVs()
+		{
+			return uvs;
+		}
+
+		public float[] getUVsArray()
+		{
+			float[] uvs = new float[this.uvs.size()];
+
+			for (int i = 0; i < this.uvs.size(); i++)
+				uvs[i] = this.uvs.get(i);
+
+			return uvs;
+		}
+
+		public int buildRaw()
+		{
+			float[] quads = new float[this.quads.size()], uvs = new float[this.uvs.size()];
+
+			for (int i = 0; i < this.quads.size(); i++)
+				quads[i] = this.quads.get(i);
+			for (int i = 0; i < this.uvs.size(); i++)
+				uvs[i] = this.uvs.get(i);
+
+			return ModelLoader.instance.loadTextVAO(quads, uvs);
 		}
 	}
 }

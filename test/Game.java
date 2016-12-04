@@ -18,7 +18,11 @@ import main.Engine.event.game.InitializationEvent;
 import main.Engine.event.game.RenderEvent;
 import main.Engine.event.game.StopEvent;
 import main.Engine.event.game.TickEvent;
+import main.Engine.font.FontRenderer;
+import main.Engine.font.Text;
+import main.Engine.util.GamePrintStream;
 import main.Engine.util.math.Position;
+import org.lwjgl.util.vector.Vector3f;
 
 import java.io.File;
 
@@ -26,6 +30,8 @@ public class Game
 {
 	public Game()
 	{
+		System.setOut(new GamePrintStream(System.out));
+
 		GameEngine engine = GameEngineManager.instance.createGameEngine(60, 20, 1280, 720, false);
 
 		EventHandler.instance.registerHandler(this);
@@ -34,6 +40,7 @@ public class Game
 	}
 
 	private Entity entity;
+	private Text text;
 
 	@Handler
 	public final FunctionalHandler<InitializationEvent> init = event ->
@@ -44,11 +51,15 @@ public class Game
 
 		ModelLoader.instance.setEngine(engine);
 		AudioManager.instance.setEngine(engine);
-		engine.modelRenderer = new ModelRenderer(new StaticShader());
 		engine.resourceManager = new ResourceManager(new Resources(new File("C:\\Users\\Yonatan\\Desktop\\Proyectos\\Java\\DarkGameEngine"), "res/"));
+		engine.fontRenderer = new FontRenderer(new ResourceLocation("res/font/arial.fnt"));
+		engine.modelRenderer = new ModelRenderer(new StaticShader());
 		entity = new Entity(new Position(0, 0, 0), 1.8f, new ModelBuilder.Dynamic()
 				.addQuad(-50, -50, -50, 50, 50, -50, 0, 0, 1, 1)
 				.buildTextured(new ResourceLocation("icon.png")));
+
+		text = new Text("hello!", 20.0f, new Position(engine.width / 2, engine.height / 2, 0), new Vector3f(1, 0, 0));
+		engine.fontRenderer.renderText(text);
 
 		engine.modelRenderer.setCamera(new Camera()
 		{
@@ -75,14 +86,19 @@ public class Game
 		engine.modelRenderer.preRender();
 		engine.modelRenderer.getShader().start();
 		engine.modelRenderer.getShader().view(engine.modelRenderer.getCamera());
-		engine.modelRenderer.renderEntity(entity, engine.modelRenderer.getShader());
+		//engine.modelRenderer.renderEntity(entity, engine.modelRenderer.getShader());
 		engine.modelRenderer.getShader().stop();
+
+		engine.fontRenderer.render();
 	};
 
 	@Handler
 	public final FunctionalHandler<StopEvent> stop = event ->
 	{
-		event.getEngine().modelRenderer.getShader().remove();
+		GameEngine engine = event.getEngine();
+
+		engine.modelRenderer.getShader().remove();
+		engine.fontRenderer.cleanUp();
 		ModelLoader.instance.cleanUp();
 		AudioManager.instance.cleanUp();
 	};

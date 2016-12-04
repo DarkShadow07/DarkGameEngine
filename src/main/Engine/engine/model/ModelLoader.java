@@ -54,6 +54,18 @@ public class ModelLoader
 		return new DynamicRawModel(vao, dynamicData, indices.length);
 	}
 
+	public int loadTextVAO(float[] positions, float[] uvs)
+	{
+		int vao = GL30.glGenVertexArrays();
+		vaoList.add(vao);
+		GL30.glBindVertexArray(vao);
+
+		storeData(0, 2, positions);
+		storeData(1, 2, uvs);
+
+		return vao;
+	}
+
 	public RawModel loadVAO(float[] positions, float[] uvs, int[] indices)
 	{
 		int vao = GL30.glGenVertexArrays();
