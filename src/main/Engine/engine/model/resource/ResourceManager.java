@@ -18,14 +18,14 @@ public class ResourceManager
 	{
 		if (!resources.fileExists(location)) return null;
 
-		File file = resources.getFile(location);
+		File file = new File(resources.getFile(location));
 
 		return file.isFile() ? new FileInputStream(file) : null;
 	}
 
 	private InputStream getResourceStream(ResourceLocation location)
 	{
-		return Class.class.getResourceAsStream(String.format("/%s/%s", location.getPath(), location.getFile()));
+		return Class.class.getResourceAsStream(location.toString());
 	}
 
 	public Resources getResources()

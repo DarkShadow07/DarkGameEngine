@@ -5,10 +5,7 @@ import main.Engine.engine.model.ModelLoader;
 import main.Engine.engine.model.resource.ResourceLocation;
 import main.Engine.engine.model.texture.ModelTexture;
 import main.Engine.util.Log;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,14 +38,12 @@ public class FontRenderer
 	public static final String STRIKETHROUGHT = formatter + "m";
 	public static final String UNDERLINE = formatter + "n";
 	public static final String ITALIC = formatter + "o";
-
-	private String fontFile, fontImg;
-	private Map<Integer, CharData> characters;
-	private float scale;
-
-	private FontShader shader;
 	public FontLoader fontLoader;
-
+	private String fontFile, fontImg;
+	private int lineHeight;
+	private Map<Integer, CharData> characters;
+	private float scale, xScale, yScale;
+	private FontShader shader;
 	private List<Text> texts = new ArrayList<>();
 
 	public FontRenderer(ResourceLocation location)
@@ -90,16 +85,17 @@ public class FontRenderer
 		shader.start();
 		for (Text text : texts)
 		{
-			GL13.glActiveTexture(GL13.GL_TEXTURE0);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, getFontTextureAtlas().getId());
 			GL30.glBindVertexArray(text.getVao());
 			GL20.glEnableVertexAttribArray(0);
 			GL20.glEnableVertexAttribArray(1);
 			shader.color(text.getColor());
 			shader.translation(text.getPosition().toVector2());
-			GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, text.getVertexCount());
+			GL13.glActiveTexture(GL13.GL_TEXTURE0);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, getFontTextureAtlas().getId());
+			GL11.glDrawElements(GL11.GL_TRIANGLES, text.getVertexCount(), GL11.GL_UNSIGNED_INT, 0);
 			GL20.glDisableVertexAttribArray(0);
 			GL20.glDisableVertexAttribArray(1);
+			GL30.glBindVertexArray(0);
 		}
 		shader.stop();
 
@@ -148,23 +144,31 @@ public class FontRenderer
 						lineData.add(new Pair<>(values[0], values[1]));
 				}
 
-				if (lineData.size() == 2)
+				if (lineData.size() == 3)
 				{
 					fontImg = lineData.get(0).getValue().replaceAll("\"", "");
 					characters = new HashMap<>(Integer.valueOf(lineData.get(1).getValue()));
+					lineHeight = Integer.valueOf(lineData.get(2).getValue());
+
+					yScale = 0.03f / lineHeight;
+					xScale = yScale / ((float) Display.getWidth() / Display.getHeight());
 				} else
 				{
 					characters.put(Integer.valueOf(lineData.get(0).getValue()), new CharData(
 							Integer.valueOf(lineData.get(1).getValue()),
 							Integer.valueOf(lineData.get(2).getValue()),
+							Integer.valueOf(lineData.get(3).getValue()) * xScale,
+							Integer.valueOf(lineData.get(4).getValue()) * yScale,
 							Integer.valueOf(lineData.get(3).getValue()),
 							Integer.valueOf(lineData.get(4).getValue()),
-							Integer.valueOf(lineData.get(5).getValue()),
-							Integer.valueOf(lineData.get(6).getValue()),
-							Integer.valueOf(lineData.get(7).getValue())));
+							Integer.valueOf(lineData.get(5).getValue()) * xScale,
+							Integer.valueOf(lineData.get(6).getValue()) * yScale,
+							Integer.valueOf(lineData.get(7).getValue()) * xScale
+					));
 				}
 			}
-			Log.info(String.format("Loaded %s characters", characters.size()));
+
+			Log.info(this.getClass(), String.format("Loaded %s characters", characters.size()));
 		} catch (Exception e)
 		{
 			e.printStackTrace();
@@ -173,50 +177,62 @@ public class FontRenderer
 
 	public static class CharData
 	{
-		private int x, y, width, height, xOffset, yOffset, xAdvance;
+		private float x, y, width, height, textureWidth, textureHeight, xOffset, yOffset, xAdvance;
 
-		public CharData(int x, int y, int width, int height, int xOffset, int yOffset, int xAdvance)
+		public CharData(float x, float y, float width, float height, float textureWidth, float textureHeight, float xOffset, float yOffset, float xAdvance)
 		{
 			this.x = x;
 			this.y = y;
 			this.width = width;
 			this.height = height;
+			this.textureWidth = textureWidth;
+			this.textureHeight = textureHeight;
 			this.xOffset = xOffset;
 			this.yOffset = yOffset;
 			this.xAdvance = xAdvance;
 		}
 
-		public int getX()
+		public float getX()
 		{
 			return x;
 		}
 
-		public int getY()
+		public float getY()
 		{
 			return y;
 		}
 
-		public int getWidth()
+		public float getWidth()
 		{
 			return width;
 		}
 
-		public int getHeight()
+		public float getHeight()
 		{
 			return height;
 		}
 
-		public int getxOffset()
+		public float getTextureWidth()
+		{
+			return textureWidth;
+		}
+
+		public float getTextureHeight()
+		{
+			return textureHeight;
+		}
+
+		public float getxOffset()
 		{
 			return xOffset;
 		}
 
-		public int getyOffset()
+		public float getyOffset()
 		{
 			return yOffset;
 		}
 
-		public int getxAdvance()
+		public float getxAdvance()
 		{
 			return xAdvance;
 		}

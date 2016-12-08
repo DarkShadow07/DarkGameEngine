@@ -1,14 +1,12 @@
 package main.Engine.engine.model.resource;
 
-import com.sun.istack.internal.Nullable;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Resources
 {
-	private final Map<String, File> resources = new HashMap<>();
+	private final Map<String, String> resources = new HashMap<>();
 
 	public Resources(File assets, String path)
 	{
@@ -20,10 +18,9 @@ public class Resources
 		return resources.containsKey(location.getFile());
 	}
 
-	@Nullable
-	public File getFile(ResourceLocation location)
+	public String getFile(ResourceLocation location)
 	{
-		return resources.get(location.toString());
+		return resources.get(location.getFile());
 	}
 
 	private void addAllFiles(File file)
@@ -33,6 +30,6 @@ public class Resources
 		for (File f : file.listFiles())
 			if (f.isDirectory()) addAllFiles(f);
 			else
-				resources.put(f.getName(), f);
+				resources.put(f.getName(), f.getPath());
 	}
 }

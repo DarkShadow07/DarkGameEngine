@@ -191,18 +191,16 @@ public class ModelBuilder
 		}
 	}
 
-	public static class TwoDimensional
+	public static class Simple
 	{
 		private List<Float> quads = new ArrayList<>(), uvs = new ArrayList<>();
 
-		private int quadCount = 0;
-
-		public TwoDimensional()
+		public Simple()
 		{
 
 		}
 
-		public TwoDimensional addQuad(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2)
+		public Simple addQuad(float x1, float y1, float x2, float y2, float u1, float v1, float u2, float v2)
 		{
 			quads.add(x1);
 			quads.add(y1);
@@ -229,8 +227,6 @@ public class ModelBuilder
 			uvs.add(v1);
 			uvs.add(u1);
 			uvs.add(v1);
-
-			quadCount++;
 
 			return this;
 		}
@@ -248,11 +244,6 @@ public class ModelBuilder
 				quads[i] = this.quads.get(i);
 
 			return quads;
-		}
-
-		public int getQuadCount()
-		{
-			return quadCount;
 		}
 
 		public List<Float> getUVs()

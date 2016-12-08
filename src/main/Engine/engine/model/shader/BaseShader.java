@@ -1,5 +1,6 @@
 package main.Engine.engine.model.shader;
 
+import main.Engine.engine.model.resource.ResourceLocation;
 import main.Engine.util.Log;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -45,7 +46,7 @@ public abstract class BaseShader
 		GL20.glUniform1f(location, value ? 1 : 0);
 	}
 
-	protected void loadVector(int location, Vector3f vector)
+	protected void loadVector3(int location, Vector3f vector)
 	{
 		GL20.glUniform3f(location, vector.getX(), vector.getY(), vector.getZ());
 	}
@@ -97,6 +98,8 @@ public abstract class BaseShader
 
 	private int loadShader(String file, int type)
 	{
+		file = new ResourceLocation(file).toString();
+
 		StringBuilder builder = new StringBuilder();
 
 		try

@@ -10,6 +10,7 @@ import main.Engine.event.game.RenderEvent;
 import main.Engine.event.game.StopEvent;
 import main.Engine.event.game.TickEvent;
 import main.Engine.font.FontRenderer;
+import main.Engine.settings.GameSettings;
 import main.Engine.util.Log;
 import main.Engine.util.Util;
 import org.lwjgl.opengl.*;
@@ -30,6 +31,9 @@ public class GameEngine
 	public ModelRenderer modelRenderer;
 	public FontRenderer fontRenderer;
 	public ResourceManager resourceManager;
+	public GameSettings gameSettings;
+
+	public String gameDir;
 
 	private Thread mainThread = Thread.currentThread();
 
@@ -86,8 +90,6 @@ public class GameEngine
 			runGameLoop();
 		} catch (Exception e)
 		{
-			System.out.println("nice");
-
 			e.printStackTrace();
 		}
 	}

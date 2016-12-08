@@ -29,7 +29,7 @@ public class FontShader extends BaseShader
 
 	public void color(Vector3f color)
 	{
-		loadVector(this.color, color);
+		loadVector3(this.color, color);
 	}
 
 	public void translation(Vector2f translation)

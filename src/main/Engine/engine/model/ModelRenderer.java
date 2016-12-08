@@ -23,7 +23,7 @@ public class ModelRenderer
 		createProjectionMatrix();
 	}
 
-	public void preRender()
+	public void prepare()
 	{
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
@@ -78,24 +78,24 @@ public class ModelRenderer
 		GL30.glBindVertexArray(0);
 	}
 
-	public void setCamera(Camera camera)
-	{
-		this.camera = camera;
-	}
-
 	public Camera getCamera()
 	{
 		return camera;
 	}
 
-	public void setShader(StaticShader shader)
+	public void setCamera(Camera camera)
 	{
-		this.shader = shader;
+		this.camera = camera;
 	}
 
 	public StaticShader getShader()
 	{
 		return shader;
+	}
+
+	public void setShader(StaticShader shader)
+	{
+		this.shader = shader;
 	}
 
 	public void createProjectionMatrix()

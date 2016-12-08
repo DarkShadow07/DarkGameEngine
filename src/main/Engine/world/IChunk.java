@@ -1,9 +1,9 @@
 package main.Engine.world;
 
 import main.Engine.entity.IEntity;
+import main.Engine.util.math.Position;
 import main.Engine.world.tile.ITickable;
 import main.Engine.world.tile.ITile;
-import main.Engine.util.math.Position;
 
 import java.util.List;
 import java.util.Map;

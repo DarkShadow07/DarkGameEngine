@@ -1,6 +1,7 @@
 package main.Engine.font;
 
 import main.Engine.util.math.Position;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Text
@@ -11,12 +12,12 @@ public class Text
 	private int vao, vertexCount;
 	private Vector3f color;
 
-	public Text(String text, float size, Position position, Vector3f color)
+	public Text(String text, float size, Position position, Color color)
 	{
 		this.text = text;
 		this.size = size;
 		this.position = position;
-		this.color = color;
+		this.color = new Vector3f(color.getRed(), color.getGreen(), color.getBlue());
 	}
 
 	public void setVAOData(int vao, int vertexCount)

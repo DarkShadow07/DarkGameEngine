@@ -5,6 +5,11 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Position extends Vector3f
 {
+	public Position(float xPos, float yPos)
+	{
+		super(xPos, yPos, 0);
+	}
+
 	public Position(float xPos, float yPos, float zPos)
 	{
 		super(xPos, yPos, zPos);

@@ -1,36 +1,19 @@
 package main.Engine.engine.model.resource;
 
+import main.Engine.engine.GameEngineManager;
+
 public class ResourceLocation
 {
-	private String path, file;
+	private String file;
 
 	public ResourceLocation(String filePath)
 	{
-		if (filePath.contains("/"))
-		{
-			path = filePath.substring(0, filePath.lastIndexOf("/"));
-			file = filePath.substring(filePath.lastIndexOf("/"));
-		} else
-		{
-			path = "";
-			file = filePath;
-		}
-	}
-
-	public ResourceLocation(String path, String file)
-	{
-		this.path = path;
-		this.file = file;
+		file = filePath;
 	}
 
 	public String getFile()
 	{
 		return file;
-	}
-
-	public String getPath()
-	{
-		return path;
 	}
 
 	@Override
@@ -50,6 +33,6 @@ public class ResourceLocation
 	@Override
 	public String toString()
 	{
-		return String.format("%s%s", path, file);
+		return GameEngineManager.instance.getGameEngine().gameDir + file;
 	}
 }
